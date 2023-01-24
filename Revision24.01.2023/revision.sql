@@ -31,5 +31,43 @@ salary > (select min(salary) from hr.employees where department_id like '1100');
 select department_name from hr.employees join hr.departments using(department_id) group by department_name
 having count(employee_id) = (select max(count(employee_id)) from hr.employees group by department_id);
 
-select max(count(employee_id)) from hr.employees join hr.departments using(department_id) group by department_id;
+select min(count(employee_id)) from hr.employees join hr.departments using(department_id) group by department_id;
 
+--select d.department_name, e.last_name, e.hire_date
+--from hr.employees e join hr.departments d on e.department_id = d.department_id
+--group by e.employee_id having count(hire_date) = (select min(hire_date) from hr.employees group by department_id);
+
+
+select e.first_name,e.last_name, e.salary,d.department_name from hr.employees e join hr.departments d
+on d.department_id = e.employee_id
+where e.salary = (select max(p.salary) from hr.employees p where p.department_id = e.department_id);
+
+
+
+--department with most hired emplloyees
+select department_name, count(employee_id) ilosc from hr.employees join hr.departments using(department_id)
+group by department_name
+having count(employee_id) = (select max(count(employee_id)) from hr.employees group by department_id);
+
+
+
+--najmniej w swoich oddziialach
+select department_id, last_name, first_name from hr.employees
+where (department_id, salary) in
+(select department_id, min(salary) from hr.employees group by department_id);
+
+
+select department_id, last_name from hr.employees
+where (department_id,salary) in
+(select department_id, max(salary) from hr.employees group by department_id);
+
+--correlated
+select e.first_name, e.last_name from hr.employees e
+where salary > (select avg(salary) from hr.employees where e.employee_id = employee_id);
+
+
+SELECT first_name, last_name, salary FROM HR.employees
+WHERE salary IN 
+    (SELECT salary FROM HR.employees
+    ORDER BY salary DESC
+    FETCH NEXT 5 ROWS ONLY);
